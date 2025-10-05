@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Reserva API</title>
+</head>
+<body>
+    <h1>Teste de Reserva API</h1>
+    
+    <div>
+        <h2>Fazer Login (para obter sessão)</h2>
+        <form id="loginForm">
+            Email: <input type="email" id="email" value="teste@teste.com"><br>
+            Senha: <input type="password" id="senha" value="123456"><br>
+            <button type="button" onclick="fazerLogin()">Login</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Criar Reserva</h2>
+        <form id="reservaForm">
+            Apartamento ID: <input type="text" id="apartamento_id" value="9"><br>
+            Apartamento Nome: <input type="text" id="apartamento_nome" value="Pousada Beach House Coqueirinho"><br>
+            Data Entrada: <input type="date" id="data_entrada"><br>
+            Data Saída: <input type="date" id="data_saida"><br>
+            Valor Total: <input type="number" id="valor_total" value="500"><br>
+            <button type="button" onclick="criarReserva()">Criar Reserva</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Listar Reservas</h2>
+        <button type="button" onclick="listarReservas()">Listar Reservas</button>
+        <div id="reservasList"></div>
+    </div>
+
+    <script>
+        async function fazerLogin() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            const response = await fetch('api/login.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const result = await response.json();
+            alert(JSON.stringify(result));
+        }
+
+        async function criarReserva() {
+            const dataEntrada = document.getElementById('data_entrada').value || '2024-01-01';
+            const dataSaida = document.getElementById('data_saida').value || '2024-01-05';
+
+            const reservaData = {
+                apartamento_id: document.getElementById('apartamento_id').value,
+                apartamento_nome: document.getElementById('apartamento_nome').value,
+                data_entrada: dataEntrada,
+                data_saida: dataSaida,
+                valor_total: document.getElementById('valor_total').value,
+                dados_pessoais: {
+                    nome: "João Teste",
+                    email: "teste@teste.com",
+                    telefone: "(11) 99999-9999",
+                    cpf: "123.456.789-00"
+                },
+                endereco_completo: "Rua Teste, 123, São Paulo, SP"
+            };
+
+            const response = await fetch('api/reserva.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reservaData)
+            });
+
+            const result = await response.json();
+            alert(JSON.stringify(result));
+        }
+
+        async function listarReservas() {
+            const response = await fetch('api/reserva.php');
+            const reservas = await response.json();
+            document.getElementById('reservasList').innerHTML = '<pre>' + JSON.stringify(reservas, null, 2) + '</pre>';
+        }
+    </script>
+</body>
+</html>
